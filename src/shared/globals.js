@@ -39,10 +39,14 @@ SW.vars.USER_NOTIFICATION_FETCH_INTERVAL = SW.vars.TIME.T_30_MIN * 1000;
 
 // Maximum number of questions a user can watch
 SW.vars.WATCH_QUESTION_LIMIT = 20;
+// Maximum numbers of profiles a user can follow
+SW.vars.FOLLOW_USER_LIMIT = 20;
 
 SW.messages = {
   WARN_INVALID_URL: 'Please navigate to a stackoverflow question page',
   WARN_WATCH_LIMIT: 'You can not watch more than 20 Questions',
+
+  WARN_FOLLOW_LIMIT: 'You can not follow more than 20 users',
 
   CONFIRM_SELECTED_NOTIFICATIONS_DELETE: 'Selected notifications will be removed. Proceed ?',
   CONFIRM_SELECTED_QUESTIONS_DELETE: 'Selected questions will be removed from watchlist. Proceed ?',

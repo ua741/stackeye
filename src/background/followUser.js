@@ -25,13 +25,24 @@ SW.methods.isUserFollowed = function(profilePageUrl, callback) {
  * @param profilePageUrl
  * @param callback
  */
-SW.methods.followUser = function(profilePageUrl, callback) {
+SW.methods.followUser = function(profilePageUrl, successCallback) {
   var urlInfo = SW.methods.extractProfilePageUrlInfo(profilePageUrl),
+    USER_FOLLOW_CRITERIA = SW.methods.IsUserFollowAllowed(),
     userDetailsObject = SW.methods.getUserDetails(urlInfo.userId, urlInfo.domain),
     userTags = SW.methods.fetchUserTags([urlInfo.userId], urlInfo.domain) || [],
     objectKey;
 
-  callback = callback || function() {};
+
+successCallback = successCallback || function() {};
+
+  if (!USER_FOLLOW_CRITERIA.allowed) {
+    alert("Following more than " + SW.vars.FOLLOW_USER_LIMIT  + " users is not recommened thing to do.");
+    SW.methods.sendMessageToContentScript({
+      messageType: 'notification',
+      type: 'se_error',
+      message: USER_FOLLOW_CRITERIA.reason
+    }, profilePageUrl);
+  }
 
   var tags = [];
   userTags.forEach(function(tagObject) {
@@ -45,10 +56,17 @@ SW.methods.followUser = function(profilePageUrl, callback) {
 
     objectKey = 'user' + ':' + userDetailsObject['user_id'];
     SW.methods.saveObject(userDetailsObject, function() {
-      callback();
+      successCallback();
       SW.methods.addObjectToStore(userDetailsObject);
     }, objectKey);
   }
+};
+
+SW.methods.IsUserFollowAllowed = function() {
+  if (SW.stores.userStore.length >= SW.vars.FOLLOW_USER_LIMIT) {
+    return { allowed: false, reason: SW.messages.WARN_FOLLOW_LIMIT };
+  }
+  return { allowed: true };
 };
 
 /**
